@@ -1,0 +1,39 @@
+###
+# GET /payments
+###
+
+GET http://localhost:3000/api/payments
+
+###
+# POST /payments
+###
+
+POST http://localhost:3000/api/payments
+Content-Type: application/json
+
+{
+  "Payment_Amount": 100.00,
+  "Payement_date": "2023-11-05",
+  "Payment_method": "Credit Card",
+  "Number_roomates": 2,
+  "Recurring_payment": "Monthly"
+}
+
+
+###
+# PUT /payments/:id
+###
+
+PUT http://localhost:3000/api/payments/6550d8aefd7863cd3b371c90
+Content-Type: application/json
+
+{
+  "Payment_Amount": 3,
+  "Number_roomates": 99.99
+}
+
+###
+# DELETE /payments/:6546594a91902947e08b017c
+###
+
+DELETE http://localhost:3000/api/payments/6548126e7be401c04511e68e
