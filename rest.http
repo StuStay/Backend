@@ -1,0 +1,13 @@
+http://localhost:3000/logements/logements/
+Content-Type: application/json
+
+{
+  "images": ["image1.jpg", "image2.jpg"],
+  "titre": "Example Logement",
+  "description": "Lorem ipsum...",
+  "nom": "John Doe",
+  "nombreChambre": 3,
+  "prix": 100,
+  "contact": "john@example.com",
+  "lieu": "City"
+}
