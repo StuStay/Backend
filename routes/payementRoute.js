@@ -1,9 +1,11 @@
-import express from 'express'
-import { getPayements, postPayement, putPayement, deletePayement } from '../controllers/payementController.js'
+import express from 'express';
+import { getPayments, postPayment, putPayment, deletePayment } from '../controllers/payementController.js';
+
 const router = express.Router();
 
-router.get('/',getPayements);
-router.post('/',postPayement);
-router.put('/:id',putPayement);
-router.delete('/:id',deletePayement);
+router.get('/', getPayments);
+router.post('/', postPayment);
+router.put('/:id', putPayment);
+router.delete('/:id', deletePayment); // Corrected function name
+
 export default router;

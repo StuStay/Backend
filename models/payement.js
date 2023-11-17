@@ -1,35 +1,37 @@
-import mongoose from 'mongoose'
-const paymentSchema =mongoose.Schema({
-  
-  Payment_Amount: {
+
+import mongoose from 'mongoose';
+
+// Remove the 'id' field from the paymentSchema
+const paymentSchema = mongoose.Schema({
+  amount: {
     type: Number,
     required: true,
   },
-  Payement_date: {
+  date: {
     type: Date,
     required: true,
+    get: function () {
+      return moment(this.date).format('YYYY-MM-DD');
+    },
   },
-  Payment_method: {
+  method: {
     type: String,
     required: true,
   },
-  Number_roomates: {
+  numberOfRoommates: {
     type: Number,
     required: true,
   },
-
-  Recurring_payment: {
+  isRecurringPayment: {
+    type: Boolean,
+    required: true,
+  },
+  recurringPaymentFrequency: {
     type: String,
     required: true,
   },
-},
-  {
-    timestamps:true
-  }
+});
 
-)
+const Payment = mongoose.model('Payment', paymentSchema);
+export default Payment;
 
-      
-  
-  const Payement = mongoose.model('Payement',paymentSchema );
-  export default Payement;
