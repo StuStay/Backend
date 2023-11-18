@@ -1,6 +1,7 @@
 import Payment from "../models/payement.js";
 import mongoose from "mongoose";
 import Joi from 'joi';
+import Stripe from 'stripe';
 
 export const getPayments = async (req, res) => {
     try {
@@ -11,41 +12,47 @@ export const getPayments = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   };
-  
 
-  export const postPayment = async (req, res) => {
-    const paymentValidationSchema = Joi.object({
+const stripe = new Stripe('sk_test_51ODc5pHJY0lWcgfJxmtmQLlunNUWBY80ZHGW2zW6GgpC2JGlU07xSRu1AvxxWRURNNFf5jqaIvYPjmpT5AVFk70q0004BNnwY4')
+export const postPayment = async (req, res) => {
+  const paymentValidationSchema = Joi.object({
       amount: Joi.number().required(),
       date: Joi.date().required(),
       method: Joi.string().required(),
       numberOfRoommates: Joi.number().required(),
-      isRecurringPayment: Joi.required(),
-      recurringPaymentFrequency: Joi.string(), // Add this line
-    });
-  
-    try {
+      isRecurringPayment: Joi.boolean().required(),
+      recurringPaymentFrequency: Joi.string(),
+  });
+
+  try {
       const { error, value } = paymentValidationSchema.validate(req.body);
-  
+
       if (error) {
-        return res.status(400).json({ message: error.details[0].message });
+          return res.status(400).json({ message: error.details[0].message });
       }
-  
-      // Format the date as a string in the 'yyyy-MM-dd' format
+
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount: value.amount * 100, // Convert amount to cents
+          currency: 'usd', // Set the currency to Tunisian Dinar
+      });
+
+      value.stripePaymentIntentId = paymentIntent.id;
+
       const formattedDate = new Date(value.date).toISOString();
-  
-      // Update the value with the formatted date
+
       value.date = formattedDate;
-  
-      // Let MongoDB generate the ID
+
       const payment = await Payment.create(value);
-  
-      // Send the newly created payment back to the client
-      res.status(200).json(payment);
-    } catch (error) {
+
+      res.status(200).json({
+          clientSecret: paymentIntent.client_secret,
+          payment,
+      });
+  } catch (error) {
       console.error(error.message);
       res.status(500).json({ message: 'Internal server error' });
-    }
   }
+};
   
 export const putPayment = async (req, res) => {
     const paymentValidationSchema = Joi.object({
@@ -54,37 +61,31 @@ export const putPayment = async (req, res) => {
         method: Joi.string(),
         numberOfRoommates: Joi.number(),
         isRecurringPayment: Joi.string(),
-        recurringPaymentFrequency: Joi.string(), // Add this line
+        recurringPaymentFrequency: Joi.string(), 
     });
     
 
   try {
     const { id } = req.params;
 
-    // Validate the request body
     const { error, value } = paymentValidationSchema.validate(req.body);
 
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    // Check if the ID is valid
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid payment ID' });
     }
 
-    // Format the date as a string in the 'yyyy-MM-dd' format
     if (value.date) {
       const formattedDate = new Date(value.date).toISOString();
-      // Update the value with the formatted date
       value.date = formattedDate;
     }
 
-    // Use findByIdAndUpdate to update only the specified fields
     const updatedPayment = await Payment.findByIdAndUpdate(id, value, { new: true });
 
     if (!updatedPayment) {
-      // If no payment is found with the given ID, return 404
       return res.status(404).json({ message: `Cannot find any payment with ID ${id}` });
     }
 
