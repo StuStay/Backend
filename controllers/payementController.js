@@ -1,70 +1,118 @@
-import Payement from "../models/payement.js"
+import Payment from "../models/payement.js";
 import mongoose from "mongoose";
-import Joi from 'joi'; 
-export const getPayements =async(req,res)=>{
-    try{
-    const payements =await Payement.find({});
-    res.status(200).json(payements)
-    } catch(error){
-        res.status(500).json({message:error.message})
+import Joi from 'joi';
+import Stripe from 'stripe';
+
+export const getPayments = async (req, res) => {
+    try {
+      const payments = await Payment.find({});
+      res.status(200).json(payments);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: 'Internal server error' });
     }
-    }
-    
-   
-    
-    
+  };
+
+const stripe = new Stripe('sk_test_51ODc5pHJY0lWcgfJxmtmQLlunNUWBY80ZHGW2zW6GgpC2JGlU07xSRu1AvxxWRURNNFf5jqaIvYPjmpT5AVFk70q0004BNnwY4')
+export const postPayment = async (req, res) => {
+  const paymentValidationSchema = Joi.object({
+      amount: Joi.number().required(),
+      date: Joi.date().required(),
+      method: Joi.string().required(),
+      numberOfRoommates: Joi.number().required(),
+      isRecurringPayment: Joi.boolean().required(),
+      recurringPaymentFrequency: Joi.string(),
+  });
+
+  try {
+      const { error, value } = paymentValidationSchema.validate(req.body);
+
+      if (error) {
+          return res.status(400).json({ message: error.details[0].message });
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount: value.amount * 100, 
+          currency: 'usd',
+      });
+
+      value.stripePaymentIntentId = paymentIntent.id;
+
+      const formattedDate = new Date(value.date).toISOString();
+
+      value.date = formattedDate;
+
+      const payment = await Payment.create(value);
+
+      res.status(200).json({
+          clientSecret: paymentIntent.client_secret,
+          payment,
+      });
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+};
+  
+export const putPayment = async (req, res) => {
     const paymentValidationSchema = Joi.object({
-      Payment_Amount: Joi.number().required(),
-      Payement_date: Joi.date().required(),
-      Payment_method: Joi.string().required(),
-      Number_roomates: Joi.number().required(),
-      Recurring_payment: Joi.string().required(),
+        amount: Joi.number(),
+        date: Joi.date(),
+        method: Joi.string(),
+        numberOfRoommates: Joi.number(),
+        isRecurringPayment: Joi.string(),
+        recurringPaymentFrequency: Joi.string(), 
     });
     
-    export const postPayement = async (req, res) => {
-      try {
-        
-        const { error, value } = paymentValidationSchema.validate(req.body);
-    
-        if (error) {
-          return res.status(400).json({ message: error.details[0].message });
-        }
-    
-        const payement = await Payement.create(value);
-        res.status(200).json(payement);
-      } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ message: error.message });
-      }
-    }
-    
 
-    export const putPayement=async(req,res)=>{
-        try{
-            const {id}=req.params;
-            const payement= await Payement.findByIdAndUpdate(id,req.body);
-            if(!payement){
-                return res.status(404).json ({message:'cannot find any payement with ID ${id}'})
-            }
-            const updatedPayement=await Payement.findById(id);
-            res.status(200).json(updatedPayement);
-        }catch(error){
-            res.status(500).json({message:error.message})
-        }
-        }
-        export const deletePayement=async(req,res)=>{
-            try{
-                const {id}=req.params;
-                if (!mongoose.Types.ObjectId.isValid(id)) {
-                    return res.status(400).json({ message: 'Invalid payement ID' });
-                }
-                const payement= await Payement.findByIdAndDelete(id,req.body);
-                if(!payement){
-                    return res.status(404).json ({message:'cannot find any payement with ID ${id}'})
-                }
-                res.status(200).json(payement);
-            }catch(error){
-                res.status(500).json({message:error.message})
-            }
-        
-            }
+  try {
+    const { id } = req.params;
+
+    const { error, value } = paymentValidationSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid payment ID' });
+    }
+
+    if (value.date) {
+      const formattedDate = new Date(value.date).toISOString();
+      value.date = formattedDate;
+    }
+
+    const updatedPayment = await Payment.findByIdAndUpdate(id, value, { new: true });
+
+    if (!updatedPayment) {
+      return res.status(404).json({ message: `Cannot find any payment with ID ${id}` });
+    }
+
+    res.status(200).json(updatedPayment);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export const deletePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: `Invalid payment ID ${id}` });
+    }
+
+    const deletedPayment = await Payment.findByIdAndDelete(id);
+
+    if (!deletedPayment) {
+      return res.status(404).json({ message: `Cannot find any payment with ID ${id}` });
+    }
+
+    res.status(200).json(deletedPayment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
