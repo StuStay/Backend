@@ -1,15 +1,13 @@
-import logementController from '../controllers/logement.js';
-
 import express from 'express';
+import { createLogement, getAllLogements, getLogementDetails, updateLogement, deleteLogement } from '../controllers/logement.js';
 
 const router = express.Router();
 
 
-router.post('/logements', logementController.createLogement);
-router.get('/logements', logementController.getAllLogements);
-router.get('/logements/:id', logementController.getLogementById);
-router.put('/logements/:id', logementController.updateLogement);
-router.delete('/logements/:id', logementController.deleteLogement);
-
+router.post('/logements', createLogement);
+router.get('/logements', getAllLogements);
+router.get('/logements/:id', getLogementDetails);
+router.put('/logements/:id', updateLogement); 
+router.delete('/logements/:id', deleteLogement); 
 
 export default router;

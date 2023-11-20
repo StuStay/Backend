@@ -1,39 +1,27 @@
-###
-# GET /payments
-###
-
-GET http://localhost:3000/api/payments
-
-###
-# POST /payments
-###
-
-POST http://localhost:3000/api/payments
+POST http://localhost:3000/api/logements
 Content-Type: application/json
 
 {
-  "Payment_Amount": 100.00,
-  "Payement_date": "2023-11-05",
-  "Payment_method": "Credit Card",
-  "Number_roomates": 2,
-  "Recurring_payment": "Monthly"
+  "images": ["image1.jpg", "image2.jpg"],
+  "titre": "Appartement moderne",
+  "description": "Description de l'appartement moderne.",
+  "nom": "Appartement A",
+  "nombreChambre": 2,
+  "prix": 1000,
+  "contact": "contact@example.com",
+  "lieu": "Ville A"
 }
 
+GET http://localhost:3000/api/logements
 
-###
-# PUT /payments/:id
-###
+GET http://localhost:3000/api/logements/{logementId}
 
-PUT http://localhost:3000/api/payments/6550d8aefd7863cd3b371c90
+PUT http://localhost:3000/api/logements/{logementId}
 Content-Type: application/json
 
 {
-  "Payment_Amount": 3,
-  "Number_roomates": 99.99
+  "nombreChambre": 3,
+  "prix": 1200
 }
 
-###
-# DELETE /payments/:6546594a91902947e08b017c
-###
-
-DELETE http://localhost:3000/api/payments/6548126e7be401c04511e68e
+DELETE http://localhost:3000/api/logements/{logementId}
