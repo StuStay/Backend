@@ -8,11 +8,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/api', logementRoutes);
 
-mongoose.connect('mongodb://localhost:27017/nom-de-votre-base-de-donnees', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb+srv://hama:sZKLggJMv5aSYQCI@cluster0.xsxxjn5.mongodb.net/?retryWrites=true&w=majority')
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
-app.listen(PORT, () => {
-  console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
+app.listen(3000, () => {
+  console.log('Node app is running on port 3000');
 });

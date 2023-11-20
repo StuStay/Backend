@@ -1,6 +1,7 @@
-POST http://localhost:3000/api/logements
-Content-Type: application/json
+GET  http://localhost:3000/api/logements
 
+POST  http://localhost:3000/api/logements
+Content-Type: application/json
 {
   "images": ["image1.jpg", "image2.jpg"],
   "titre": "Appartement moderne",
@@ -12,11 +13,11 @@ Content-Type: application/json
   "lieu": "Ville A"
 }
 
-GET http://localhost:3000/api/logements
 
-GET http://localhost:3000/api/logements/{logementId}
 
-PUT http://localhost:3000/api/logements/{logementId}
+
+
+PUT http://localhost:3000/api/logements/6550d8aefd7863cd3b371c90
 Content-Type: application/json
 
 {
@@ -24,4 +25,4 @@ Content-Type: application/json
   "prix": 1200
 }
 
-DELETE http://localhost:3000/api/logements/{logementId}
+DELETE http://localhost:3000/api/logements/6550d8aefd7863cd3b371c92
