@@ -38,3 +38,12 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:3000/api/payments/6548126e7be401c04511e68e
+
+######
+
+POST http://localhost:3000/api/flouci
+Content-Type: application/json
+
+{
+  "amount":"1100"
+}

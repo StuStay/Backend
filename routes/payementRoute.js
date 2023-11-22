@@ -6,6 +6,6 @@ const router = express.Router();
 router.get('/', getPayments);
 router.post('/', postPayment);
 router.put('/:id', putPayment);
-router.delete('/:id', deletePayment); // Corrected function name
+router.delete('/:id', deletePayment); 
 
 export default router;
