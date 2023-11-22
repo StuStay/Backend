@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/api', logementRoutes);
 
-mongoose.connect('mongodb+srv://hama:sZKLggJMv5aSYQCI@cluster0.xsxxjn5.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://yassine:0000@cluster0.dstmulp.mongodb.net/')
   .then(() => {
     console.log('Connected to MongoDB');
   })
