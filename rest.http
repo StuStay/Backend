@@ -12,12 +12,11 @@ POST http://localhost:3000/api/payments
 Content-Type: application/json
 
 {
-  "amount": 30,
-  "date": "2023-11-05",
-  "method": "Credit Card",
-  "numberOfRoommates": 4,
-  "isRecurringPayment": "false",
-  "recurringPaymentFrequency": "Monthly"
+  "Payment_Amount": 100.00,
+  "Payement_date": "2023-11-05",
+  "Payment_method": "Credit Card",
+  "Number_roomates": 2,
+  "Recurring_payment": "Monthly"
 }
 
 

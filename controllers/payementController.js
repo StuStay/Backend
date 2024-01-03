@@ -1,17 +1,21 @@
 import Payment from "../models/payement.js";
 import mongoose from "mongoose";
 import Joi from 'joi';
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 export const getPayments = async (req, res) => {
-    try {
-      const payments = await Payment.find({});
-      res.status(200).json(payments);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
+  try {
+    const payments = await Payment.find({});
+    console.log('payments here')
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
 
 const stripe = new Stripe('sk_test_51ODc5pHJY0lWcgfJxmtmQLlunNUWBY80ZHGW2zW6GgpC2JGlU07xSRu1AvxxWRURNNFf5jqaIvYPjmpT5AVFk70q0004BNnwY4')
 export const postPayment = async (req, res) => {
@@ -20,8 +24,7 @@ export const postPayment = async (req, res) => {
       date: Joi.date().required(),
       method: Joi.string().required(),
       numberOfRoommates: Joi.number().required(),
-      isRecurringPayment: Joi.boolean().required(),
-      recurringPaymentFrequency: Joi.string(),
+      paymentType: Joi.optional()
   });
 
   try {
@@ -33,7 +36,7 @@ export const postPayment = async (req, res) => {
 
       const paymentIntent = await stripe.paymentIntents.create({
           amount: value.amount * 100, 
-          currency: 'usd',
+          currency: 'usd', 
       });
 
       value.stripePaymentIntentId = paymentIntent.id;
@@ -53,25 +56,21 @@ export const postPayment = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
   }
 };
-  
 export const putPayment = async (req, res) => {
-    const paymentValidationSchema = Joi.object({
-        amount: Joi.number(),
-        date: Joi.date(),
-        method: Joi.string(),
-        numberOfRoommates: Joi.number(),
-        isRecurringPayment: Joi.string(),
-        recurringPaymentFrequency: Joi.string(), 
-    });
-    
+  const paymentValidationSchema = Joi.object({
+    amount: Joi.number(),
+    date: Joi.date(),
+    method: Joi.string(),
+    numberOfRoommates: Joi.number(),
+
+  });
 
   try {
     const { id } = req.params;
-
-    const { error, value } = paymentValidationSchema.validate(req.body);
+    const { error, value } = paymentValidationSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return res.status(400).json({ message: 'Validation error', errors: error.details });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -94,7 +93,7 @@ export const putPayment = async (req, res) => {
     console.error(error.message);
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const deletePayment = async (req, res) => {
   try {
@@ -115,4 +114,4 @@ export const deletePayment = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};

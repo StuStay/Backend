@@ -1,7 +1,5 @@
-
 import mongoose from 'mongoose';
 
-// Remove the 'id' field from the paymentSchema
 const paymentSchema = mongoose.Schema({
   amount: {
     type: Number,
@@ -22,16 +20,13 @@ const paymentSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  isRecurringPayment: {
-    type: Boolean,
-    required: true,
-  },
-  recurringPaymentFrequency: {
-    type: String,
+
+  paymentType: {
+    type: [String], // Change the type to an array of strings
+    enum: ['water', 'light', 'rent', 'wifi'],
     required: true,
   },
 });
 
 const Payment = mongoose.model('Payment', paymentSchema);
 export default Payment;
-

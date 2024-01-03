@@ -1,42 +1,47 @@
-import mongoose from 'mongoose'
-const reservationSchema=mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: ['homme', 'femme'],
-    required: true,
-  },
-  check_in_date: {
-    type: Date,
-    required: true,
-  },
-  check_out_date: {
-    type: Date,
-    required: true,
-  },
-  contact_phone: String, //phone
-  number_of_roomates: {
-    type: String,
-    required: true,
-  },
- 
-  total_price: {
-    type: String,
-    required: true,
-  },
-},
-      {
-        timestamps:true
-      }
+import mongoose from 'mongoose';
 
-      
-  )
-  const Reservation = mongoose.model('Reservation',reservationSchema);
-  export default Reservation;
+
+
+const reservationSchema = mongoose.Schema(
+  {
+    location: {
+      type: String,
+      required: true,
+    },
+    checkInDate: {
+      type: Date,
+      required: true,
+    },
+    checkOutDate: {
+      type: Date,
+      required: true,
+    },
+    numberOfRoommates: {
+      type: String,
+      required: true,
+    },
+    minPrice: {
+      type: String,
+      required: true,
+    },
+    maxPrice: {
+      type: String,
+      required: true,
+    },
+    bedrooms: {
+      type: Number, 
+      required: true,
+    },
+    features: [{
+      type: String,
+      enum: ['PARKING', 'DISHWASHER', 'ELEVATOR'],
+    }],
+    
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Reservation = mongoose.model('Reservation', reservationSchema);
+export default Reservation;

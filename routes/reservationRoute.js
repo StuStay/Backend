@@ -1,5 +1,4 @@
 import express from 'express'
-import Reservation from '../models/reservation.js'
 import { getReservations,postReservation,putReservation,deleteReservation } from '../controllers/reservationController.js'
 const router = express.Router();
 
